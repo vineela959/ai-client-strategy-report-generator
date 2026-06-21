@@ -6,7 +6,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 import uuid
 
-from backend.ai_agent import generate_strategy
+from ai_agent import generate_strategy
 
 
 app = FastAPI(
