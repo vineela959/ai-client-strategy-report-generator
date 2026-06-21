@@ -6,6 +6,7 @@ from fastapi.responses import FileResponse
 from reportlab.platypus import SimpleDocTemplate, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 import uuid
+import os
 
 from ai_agent import generate_strategy
 
@@ -23,11 +24,9 @@ app.add_middleware(
 )
 
 
-app.mount(
-    "/static",
-    StaticFiles(directory="."),
-    name="static"
-)
+# create reports folder if missing
+os.makedirs("reports", exist_ok=True)
+
 
 @app.get("/")
 def home():
@@ -41,21 +40,11 @@ app.mount(
 )
 
 
-
 class ClientRequest(BaseModel):
 
     client_name: str
     industry: str
     goals: str
-
-
-
-@app.get("/")
-def home():
-
-    return {
-        "message":"API running"
-    }
 
 
 
