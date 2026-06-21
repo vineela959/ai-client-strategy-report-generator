@@ -1,164 +1,148 @@
 <!DOCTYPE html>
 <html>
-
 <head>
+    <title>AI Client Strategy Report Generator</title>
 
-<title>AI Client Strategy Report Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+        }
 
-<style>
+        input, textarea, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+        }
 
-body{
-font-family:Arial;
-max-width:700px;
-margin:40px auto;
-}
+        button {
+            cursor: pointer;
+            background: #222;
+            color: white;
+            border: none;
+        }
 
-input,textarea,button{
-width:100%;
-padding:12px;
-margin:10px 0;
-}
+        #result {
+            white-space: pre-wrap;
+            background: #f4f4f4;
+            padding: 15px;
+            margin-top: 20px;
+        }
 
-#result{
-white-space:pre-wrap;
-background:#f5f5f5;
-padding:15px;
-margin-top:20px;
-}
-
-#downloadBtn{
-display:none;
-margin-top:15px;
-padding:12px;
-background:black;
-color:white;
-text-decoration:none;
-}
-
-</style>
+        #pdfLink {
+            display: none;
+            margin-top: 15px;
+        }
+    </style>
 
 </head>
 
-
 <body>
-
 
 <h1>AI Client Strategy Report Generator</h1>
 
-
 <input id="client" placeholder="Client Name">
-
 
 <input id="industry" placeholder="Industry">
 
-
 <textarea id="goals" placeholder="Business Goals"></textarea>
 
-
-<button id="generateBtn">
+<button onclick="generateReport()">
 Generate Report
 </button>
 
 
 <div id="result"></div>
 
-
-<a id="downloadBtn" target="_blank">
-Download PDF Report
+<a id="pdfLink" target="_blank">
+Download PDF
 </a>
-
 
 
 <script>
 
+async function generateReport(){
 
-const button =
-document.getElementById("generateBtn");
+    const result = document.getElementById("result");
+    const pdfLink = document.getElementById("pdfLink");
 
-
-button.onclick = async function(){
-
-
-const result =
-document.getElementById("result");
+    result.innerHTML = "Generating...";
+    pdfLink.style.display = "none";
 
 
-const download =
-document.getElementById("downloadBtn");
+    try {
+
+        const response = await fetch("/generate", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+
+                client_name:
+                document.getElementById("client").value,
+
+                industry:
+                document.getElementById("industry").value,
+
+                goals:
+                document.getElementById("goals").value
+            })
+
+        });
 
 
+        const data = await response.json();
 
-result.innerHTML = "Generating...";
-download.style.display="none";
-
-
-
-try{
+        console.log(data);
 
 
-const response = await fetch(
-"/generate",
-{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
+        if(data.strategy_report){
 
-client_name:
-document.getElementById("client").value,
+            result.innerHTML = data.strategy_report;
 
-industry:
-document.getElementById("industry").value,
+        }
+        else {
 
-goals:
-document.getElementById("goals").value
+            result.innerHTML =
+            JSON.stringify(data, null, 2);
 
-})
-}
-);
+        }
 
 
+        if(data.pdf_file){
 
-const data =
-await response.json();
+            pdfLink.href =
+            "/" + data.pdf_file;
 
+            pdfLink.style.display = "block";
 
+            pdfLink.innerHTML =
+            "Download PDF";
 
-result.innerHTML =
-data.strategy_report;
-
-
-
-download.href =
-data.pdf_file;
+        }
 
 
-download.style.display =
-"inline-block";
+    }
 
+    catch(error){
 
-}
+        console.log(error);
 
-catch(error){
+        result.innerHTML =
+        "Error generating report";
 
-
-result.innerHTML =
-"Error: " + error;
-
-
-console.log(error);
-
+    }
 
 }
-
-
-};
-
 
 </script>
 
 
 </body>
-
 </html>
