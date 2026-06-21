@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from reportlab.platypus import SimpleDocTemplate, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 import uuid
@@ -23,10 +24,14 @@ app.add_middleware(
 
 
 app.mount(
-    "/",
-    StaticFiles(directory=".", html=True),
-    name="frontend"
+    "/static",
+    StaticFiles(directory="."),
+    name="static"
 )
+
+@app.get("/")
+def home():
+    return FileResponse("index.html")
 
 
 app.mount(
