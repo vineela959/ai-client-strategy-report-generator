@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>AI Client Strategy Report Generator</title>
+
+<style>
+
+body{
+font-family:Arial;
+max-width:700px;
+margin:40px auto;
+}
+
+input,textarea,button{
+width:100%;
+padding:12px;
+margin:10px 0;
+}
+
+#result{
+white-space:pre-wrap;
+background:#f5f5f5;
+padding:15px;
+margin-top:20px;
+}
+
+#downloadBtn{
+display:none;
+margin-top:15px;
+padding:12px;
+background:black;
+color:white;
+text-decoration:none;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<h1>AI Client Strategy Report Generator</h1>
+
+
+<input id="client" placeholder="Client Name">
+
+
+<input id="industry" placeholder="Industry">
+
+
+<textarea id="goals" placeholder="Business Goals"></textarea>
+
+
+<button id="generateBtn">
+Generate Report
+</button>
+
+
+<div id="result"></div>
+
+
+<a id="downloadBtn" target="_blank">
+Download PDF Report
+</a>
+
+
+
+<script>
+
+
+const button =
+document.getElementById("generateBtn");
+
+
+button.onclick = async function(){
+
+
+const result =
+document.getElementById("result");
+
+
+const download =
+document.getElementById("downloadBtn");
+
+
+
+result.innerHTML = "Generating...";
+download.style.display="none";
+
+
+
+try{
+
+
+const response = await fetch(
+"/generate",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+
+client_name:
+document.getElementById("client").value,
+
+industry:
+document.getElementById("industry").value,
+
+goals:
+document.getElementById("goals").value
+
+})
+}
+);
+
+
+
+const data =
+await response.json();
+
+
+
+result.innerHTML =
+data.strategy_report;
+
+
+
+download.href =
+data.pdf_file;
+
+
+download.style.display =
+"inline-block";
+
+
+}
+
+catch(error){
+
+
+result.innerHTML =
+"Error: " + error;
+
+
+console.log(error);
+
+
+}
+
+
+};
+
+
+</script>
+
+
+</body>
+
+</html>
