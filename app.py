@@ -24,8 +24,9 @@ app.add_middleware(
 )
 
 
-# create reports folder if missing
+# Create folders if missing
 os.makedirs("reports", exist_ok=True)
+
 
 
 @app.get("/")
@@ -33,11 +34,13 @@ def home():
     return FileResponse("index.html")
 
 
+
 app.mount(
     "/reports",
     StaticFiles(directory="reports"),
     name="reports"
 )
+
 
 
 class ClientRequest(BaseModel):
@@ -51,37 +54,49 @@ class ClientRequest(BaseModel):
 @app.post("/generate")
 def generate_report(data: ClientRequest):
 
+    try:
 
-    result = generate_strategy(
-        data.client_name,
-        data.industry,
-        data.goals
-    )
-
-
-    filename = f"reports/{uuid.uuid4()}.pdf"
+        result = generate_strategy(
+            data.client_name,
+            data.industry,
+            data.goals
+        )
 
 
-    pdf = SimpleDocTemplate(filename)
+        filename = f"reports/{uuid.uuid4()}.pdf"
 
 
-    styles = getSampleStyleSheet()
+        pdf = SimpleDocTemplate(filename)
 
 
-    pdf.build(
-        [
-            Paragraph(
-                result.replace("\n","<br/>"),
-                styles["BodyText"]
-            )
-        ]
-    )
+        styles = getSampleStyleSheet()
 
 
-    return {
+        pdf.build(
+            [
+                Paragraph(
+                    result.replace("\n", "<br/>"),
+                    styles["BodyText"]
+                )
+            ]
+        )
 
-        "strategy_report": result,
 
-        "pdf_file": "/" + filename
+        return {
 
-    }
+            "strategy_report": result,
+
+            "pdf_file": "/" + filename
+
+        }
+
+
+    except Exception as e:
+
+        print("GENERATE ERROR:", e)
+
+        return {
+
+            "error": str(e)
+
+        }
