@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>AI Client Strategy Report Generator</title>
 
@@ -15,20 +16,21 @@
             width: 100%;
             padding: 12px;
             margin: 10px 0;
+            box-sizing: border-box;
         }
 
         button {
-            cursor: pointer;
-            background: #222;
+            background: black;
             color: white;
+            cursor: pointer;
             border: none;
         }
 
         #result {
-            white-space: pre-wrap;
+            margin-top: 20px;
             background: #f4f4f4;
             padding: 15px;
-            margin-top: 20px;
+            white-space: pre-wrap;
         }
 
         #pdfLink {
@@ -39,110 +41,180 @@
 
 </head>
 
+
 <body>
+
 
 <h1>AI Client Strategy Report Generator</h1>
 
-<input id="client" placeholder="Client Name">
 
-<input id="industry" placeholder="Industry">
+<input 
+id="client"
+placeholder="Client Name">
 
-<textarea id="goals" placeholder="Business Goals"></textarea>
+
+<input 
+id="industry"
+placeholder="Industry">
+
+
+<textarea 
+id="goals"
+placeholder="Business Goals"></textarea>
+
 
 <button onclick="generateReport()">
 Generate Report
 </button>
 
 
+
 <div id="result"></div>
+
 
 <a id="pdfLink" target="_blank">
 Download PDF
 </a>
 
 
+
 <script>
+
 
 async function generateReport(){
 
-    const result = document.getElementById("result");
-    const pdfLink = document.getElementById("pdfLink");
 
-    result.innerHTML = "Generating...";
-    pdfLink.style.display = "none";
+    const result =
+    document.getElementById("result");
 
 
-    try {
+    const pdfLink =
+    document.getElementById("pdfLink");
 
-        const response = await fetch("/generate", {
+
+
+    result.innerHTML =
+    "Generating...";
+
+
+    pdfLink.style.display =
+    "none";
+
+
+
+    try{
+
+
+        const response =
+        await fetch("/generate", {
+
 
             method: "POST",
 
+
             headers: {
+
                 "Content-Type": "application/json"
+
             },
 
+
             body: JSON.stringify({
+
 
                 client_name:
                 document.getElementById("client").value,
 
+
                 industry:
                 document.getElementById("industry").value,
 
+
                 goals:
                 document.getElementById("goals").value
+
             })
 
         });
 
 
-        const data = await response.json();
 
-        console.log(data);
+        const raw =
+        await response.text();
+
+
+        console.log(
+        "SERVER RESPONSE:",
+        raw
+        );
+
+
+        const data =
+        JSON.parse(raw);
+
 
 
         if(data.strategy_report){
 
-            result.innerHTML = data.strategy_report;
+
+            result.innerHTML =
+            data.strategy_report;
+
 
         }
-        else {
+        else{
+
 
             result.innerHTML =
             JSON.stringify(data, null, 2);
 
+
         }
+
 
 
         if(data.pdf_file){
 
-            pdfLink.href =
-            "/" + data.pdf_file;
 
-            pdfLink.style.display = "block";
+            pdfLink.href =
+            data.pdf_file;
+
 
             pdfLink.innerHTML =
             "Download PDF";
 
+
+            pdfLink.style.display =
+            "block";
+
+
         }
+
 
 
     }
 
+
     catch(error){
 
+
         console.log(error);
+
 
         result.innerHTML =
         "Error generating report";
 
+
     }
 
+
 }
+
+
 
 </script>
 
 
 </body>
+
 </html>
